@@ -670,8 +670,8 @@ fn convert_chars(src: &str, mode: &str, para_start: bool, turkic: &[bool]) -> Ve
                     upper(c)
                 }
             }
-            "title" => convert_title_char(c, i, &mut up, &upper, &lower),
-            _ => convert_sentence_char(c, i, &mut up, &chars, &upper, &lower),
+            "title" => convert_title_char(c, i, &mut up, upper, lower),
+            _ => convert_sentence_char(c, i, &mut up, &chars, upper, lower),
         };
         out.push(new);
     }
