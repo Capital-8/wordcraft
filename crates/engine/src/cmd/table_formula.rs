@@ -482,7 +482,7 @@ impl Parser {
 fn cell_ref(name: &str) -> Option<(usize, usize)> {
     let letters: String = name.chars().take_while(char::is_ascii_alphabetic).collect();
     let digits = name.get(letters.len()..)?;
-    if letters.is_empty() || digits.is_empty() || !digits.chars().all(char::is_ascii_digit) {
+    if letters.is_empty() || digits.is_empty() || !digits.chars().all(|c| c.is_ascii_digit()) {
         return None;
     }
     let col = letters.bytes().try_fold(0usize, |acc, b| acc.checked_mul(26)?.checked_add((b.to_ascii_uppercase() - b'A') as usize + 1))? - 1;

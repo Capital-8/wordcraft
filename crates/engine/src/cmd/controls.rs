@@ -579,7 +579,7 @@ fn info(s: &mut Session, v: &Value) -> CmdResult {
     Ok(describe(s, &r))
 }
 
-fn apply_kind_properties(c: &mut StructuredControl, v: &Value) -> Option<String> {
+fn apply_kind_properties(c: &mut ContentControl, v: &Value) -> Option<String> {
     let mut content = None;
     match &mut c.kind {
         ControlKind::Text { multi_line } => {
