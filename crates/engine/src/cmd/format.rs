@@ -601,13 +601,7 @@ fn convert(src: &str, mode: &str, para_start: bool) -> String {
     convert_chars(src, mode, para_start, &turkic).concat()
 }
 
-fn convert_title_char(
-    c: char,
-    i: usize,
-    up: &mut bool,
-    upper: impl Fn(char) -> String,
-    lower: impl Fn(usize, char) -> String,
-) -> String {
+fn convert_title_char(c: char, i: usize, up: &mut bool, upper: impl Fn(char) -> String, lower: impl Fn(usize, char) -> String) -> String {
     let n = if *up && c.is_alphabetic() {
         *up = false;
         upper(c)
@@ -771,7 +765,6 @@ pub fn state(s: &Session) -> Value {
         "noProof": all.iter().all(|r| r.no_proof),
     })
 }
-
 
 /// What Enclose Characters works on: the selected text (one full-width or up to two half-width
 /// characters), or enclosed characters already there (selected, or beside the caret).

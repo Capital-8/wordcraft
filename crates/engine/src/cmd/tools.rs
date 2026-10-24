@@ -195,8 +195,7 @@ impl AutoCorrectPrefs {
             .filter(|(a, _)| !self.removed.iter().any(|r| r == a) && !self.entries.iter().any(|(e, _)| e == a))
             .filter(|(a, _)| self.fractions || !FRACTIONS.contains(a))
             .find(|(a, _)| {
-                *a == word
-                    || (a.chars().all(char::is_lowercase) && word.to_lowercase() == *a && word.chars().next().is_some_and(char::is_uppercase))
+                *a == word || (a.chars().all(char::is_lowercase) && word.to_lowercase() == *a && word.chars().next().is_some_and(char::is_uppercase))
             })
             .map(|(a, b)| {
                 if *a != word && b.chars().next().is_some_and(char::is_lowercase) {

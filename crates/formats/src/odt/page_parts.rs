@@ -4,7 +4,7 @@ use std::collections::HashSet;
 
 use wordcraft_doc::{Part, PartKind};
 
-use super::{events, get, model, Body, Ev, FBlock, Pages, SectionProps, Styles};
+use super::{Body, Ev, FBlock, Pages, SectionProps, Styles, events, get, model};
 
 /// Most XML events kept for all headers and footers together; a slot past it is left out.
 const MAX_EVENTS: usize = 1 << 20;

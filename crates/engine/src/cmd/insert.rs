@@ -1375,4 +1375,3 @@ mod tests {
         assert_eq!(date_picture("DATE"), None);
     }
 }
-

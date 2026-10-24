@@ -170,7 +170,7 @@ impl Writer<'_> {
         self.para_inner(w, p, rels, top, depth, false);
     }
 
-    fn write_mark_rpr(&self, w: &mut W, mark: &CharProps, mark_revs: &[(u32, &str)]) {
+    fn write_mark_rpr(&mut self, w: &mut W, mark: &CharProps, mark_revs: &[(u32, &str)]) {
         w.open("w:rPr", &[]);
         for (idx, tag) in mark_revs {
             let (id, author, date) = self.rev_attrs(*idx);
