@@ -321,28 +321,11 @@ mod tests {
         rot: f32,
         flip_h: bool,
         flip_v: bool,
-        group: InlineObject,
     }
 
     impl ScaledGroupSpec {
         fn new(w: f32, h: f32, kind: ShapeKind, rot: f32, flip_h: bool, flip_v: bool) -> Self {
-            let group = InlineObject::Group {
-                w,
-                h,
-                ch_w: 200.0,
-                ch_h: 300.0,
-                float: Float { rot: 25.0, flip_h: true, ..Default::default() },
-                canvas: None,
-                children: vec![
-                    GroupChild { x: 100.0, y: 200.0, obj: shape(ShapeKind::Rectangle, ShapeExtra { id: 7, ..Default::default() }, Float::default()) },
-                    GroupChild {
-                        x: 10.0,
-                        y: 30.0,
-                        obj: shape(kind, ShapeExtra { start: None, end: None, ..Default::default() }, Float { rot, flip_h, flip_v, ..Default::default() }),
-                    },
-                ],
-            };
-            Self { w, h, kind, rot, flip_h, flip_v, group }
+            Self { w, h, kind, rot, flip_h, flip_v }
         }
     }
 
@@ -376,7 +359,11 @@ mod tests {
                 GroupChild {
                     x: 10.0,
                     y: 30.0,
-                    obj: shape(spec.kind, ShapeExtra { start, end, ..Default::default() }, Float { rot: spec.rot, flip_h: spec.flip_h, flip_v: spec.flip_v, ..Default::default() }),
+                    obj: shape(
+                        spec.kind,
+                        ShapeExtra { start, end, ..Default::default() },
+                        Float { rot: spec.rot, flip_h: spec.flip_h, flip_v: spec.flip_v, ..Default::default() },
+                    ),
                 },
             ],
         };
@@ -393,7 +380,15 @@ mod tests {
         assert!(
             (actual.0 - expected.0).abs() < 0.001 && (actual.1 - expected.1).abs() < 0.001,
             "{}x{}, {:?}, {}, {}, {}, {}: {:?} != {:?}",
-            spec.w, spec.h, spec.kind, spec.rot, spec.flip_h, spec.flip_v, free_start, actual, expected
+            spec.w,
+            spec.h,
+            spec.kind,
+            spec.rot,
+            spec.flip_h,
+            spec.flip_v,
+            free_start,
+            actual,
+            expected
         );
         let InlineObject::Group { children, .. } = group else { panic!("group") };
         let c = &children[1];
