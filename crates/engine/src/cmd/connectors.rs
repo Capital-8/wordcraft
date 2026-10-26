@@ -328,7 +328,9 @@ mod tests {
     }
 
     /// One scaled-group case: rerouting keeps the visual free end and the resolved sites.
-    fn assert_scaled_group_reroute(w: f32, h: f32, kind: ShapeKind, rot: f32, flip_h: bool, flip_v: bool, free: Option<ConnEnd>, free_start: bool) {
+    fn assert_scaled_group_reroute(size: (f32, f32), kind: ShapeKind, spin: (f32, bool, bool), free: Option<ConnEnd>, free_start: bool) {
+        let (w, h) = size;
+        let (rot, flip_h, flip_v) = spin;
         let attached = Some(ConnEnd { id: 7, site: 3 });
         let (start, end) = if free_start { (free, attached) } else { (attached, free) };
         let group = InlineObject::Group {
@@ -378,7 +380,7 @@ mod tests {
                     for (flip_h, flip_v) in [(false, false), (true, false), (false, true), (true, true)] {
                         for free in [None, Some(ConnEnd { id: 404, site: 0 }), Some(ConnEnd { id: 7, site: 99 })] {
                             for free_start in [false, true] {
-                                assert_scaled_group_reroute(w, h, kind, rot, flip_h, flip_v, free, free_start);
+                                assert_scaled_group_reroute((w, h), kind, (rot, flip_h, flip_v), free, free_start);
                             }
                         }
                     }
