@@ -313,6 +313,22 @@ mod tests {
         }
     }
 
+    /// The per-case shape/geometry of one scaled-group reroute case.
+    struct ScaledGroupSpec {
+        w: f32,
+        h: f32,
+        kind: ShapeKind,
+        rot: f32,
+        flip_h: bool,
+        flip_v: bool,
+    }
+
+    impl ScaledGroupSpec {
+        fn new(w: f32, h: f32, kind: ShapeKind, rot: f32, flip_h: bool, flip_v: bool) -> Self {
+            Self { w, h, kind, rot, flip_h, flip_v }
+        }
+    }
+
     fn visual_ends(group: &InlineObject) -> ((f32, f32), (f32, f32)) {
         let InlineObject::Group { w, h, float, .. } = group else { panic!("group") };
         let rects = group.group_rects(0.0, 0.0, *w, *h);
@@ -328,14 +344,12 @@ mod tests {
     }
 
     /// One scaled-group case: rerouting keeps the visual free end and the resolved sites.
-    fn assert_scaled_group_reroute(size: (f32, f32), kind: ShapeKind, spin: (f32, bool, bool), free: Option<ConnEnd>, free_start: bool) {
-        let (w, h) = size;
-        let (rot, flip_h, flip_v) = spin;
+    fn assert_scaled_group_reroute(spec: ScaledGroupSpec, free: Option<ConnEnd>, free_start: bool) {
         let attached = Some(ConnEnd { id: 7, site: 3 });
         let (start, end) = if free_start { (free, attached) } else { (attached, free) };
         let group = InlineObject::Group {
-            w,
-            h,
+            w: spec.w,
+            h: spec.h,
             ch_w: 200.0,
             ch_h: 300.0,
             float: Float { rot: 25.0, flip_h: true, ..Default::default() },
@@ -345,7 +359,11 @@ mod tests {
                 GroupChild {
                     x: 10.0,
                     y: 30.0,
-                    obj: shape(kind, ShapeExtra { start, end, ..Default::default() }, Float { rot, flip_h, flip_v, ..Default::default() }),
+                    obj: shape(
+                        spec.kind,
+                        ShapeExtra { start, end, ..Default::default() },
+                        Float { rot: spec.rot, flip_h: spec.flip_h, flip_v: spec.flip_v, ..Default::default() },
+                    ),
                 },
             ],
         };
@@ -361,7 +379,16 @@ mod tests {
         let actual = if free_start { after.0 } else { after.1 };
         assert!(
             (actual.0 - expected.0).abs() < 0.001 && (actual.1 - expected.1).abs() < 0.001,
-            "{w}x{h}, {kind:?}, {rot}, {flip_h}, {flip_v}, {free_start}: {actual:?} != {expected:?}"
+            "{}x{}, {:?}, {}, {}, {}, {}: {:?} != {:?}",
+            spec.w,
+            spec.h,
+            spec.kind,
+            spec.rot,
+            spec.flip_h,
+            spec.flip_v,
+            free_start,
+            actual,
+            expected
         );
         let InlineObject::Group { children, .. } = group else { panic!("group") };
         let c = &children[1];
@@ -371,7 +398,6 @@ mod tests {
         assert_eq!(float.rot, 0.0);
         assert!(!reroute(&mut s), "rerouting must settle");
     }
-
     #[test]
     fn rerouting_scaled_group_preserves_visual_free_and_unresolved_ends() {
         for (w, h) in [(200.0, 300.0), (400.0, 600.0), (400.0, 150.0)] {
@@ -380,7 +406,7 @@ mod tests {
                     for (flip_h, flip_v) in [(false, false), (true, false), (false, true), (true, true)] {
                         for free in [None, Some(ConnEnd { id: 404, site: 0 }), Some(ConnEnd { id: 7, site: 99 })] {
                             for free_start in [false, true] {
-                                assert_scaled_group_reroute((w, h), kind, (rot, flip_h, flip_v), free, free_start);
+                                assert_scaled_group_reroute(ScaledGroupSpec::new(w, h, kind, rot, flip_h, flip_v), free, free_start);
                             }
                         }
                     }
